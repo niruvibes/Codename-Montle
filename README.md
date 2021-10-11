@@ -1,2 +1,2 @@
-# Operation-Chronomancy
+# Operation: Chronomancy
 POGGERS DAILY QqeuIGNFMA SBALS
