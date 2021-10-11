@@ -35,6 +35,7 @@ Saves via pickling the class object
 
 Wanted features.
 <ul>
+  <li>Archive Homework that you're never actually going to do</li>
   <li>Input and edit information</li>
   <li>center the text</li>
   <li>edit printed text</li>
