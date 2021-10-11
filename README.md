@@ -1,7 +1,7 @@
 # Operation: Chronomancy
 POGGERS DAILY QqeuIGNFMA SBALS
 
-Name suggestions
+Name suggestions for<br/>
   Operation: Chronomancy <br/>
   Agenda<br/>
   Senda < Robert's Vote<br/>
