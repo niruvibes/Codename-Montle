@@ -2,10 +2,10 @@
 POGGERS DAILY QqeuIGNFMA SBALS
 
 Name suggestions
-  Operation: Chronomancy\n
-  Agenda\n
-  Senda < Robert's Vote\n
-  Chroma\n
-  Chronda\n
-  Chromida\n
-  Chrisonandananabanana\n
+  Operation: Chronomancy <br/>
+  Agenda<br/>
+  Senda < Robert's Vote<br/>
+  Chroma<br/>
+  Chronda<br/>
+  Chromida<br/>
+  Chrisonandananabanana<br/>
