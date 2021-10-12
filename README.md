@@ -22,7 +22,6 @@ Inbetween every task is a short break such as go get food/drink water/ standup m
 
 Saves every 10 minutes
 Saves via pickling the class object
-
 ###Wanted features.
 
 <ul>
