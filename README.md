@@ -3,6 +3,7 @@
   <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/src/book.png"><br>
   Welcome to Chronos, a simple planning application which will sort out all your activites into a planner by priority. Chronos will also add breaks into your plan so you arent working 24/7.
 </p>
+
 ## Features Brainstorm
 Operation: Chronomancy
 
