@@ -8,6 +8,7 @@ screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
 
 #Setting the title and icon
 pygame.display.set_caption("Montle")
+#icon = pygame.image.load('book.png')
 icon = pygame.image.load('book.png')
 pygame.display.set_icon(icon)
 
