@@ -45,5 +45,6 @@ Saves via pickling the class object
   <li>wxPython</li>
   <li>Tkinter</li>
   <li>https://realpython.com/python-gui-with-wxpython/</li>
+  <li>https://docs.python.org/3/library/tkinter.html</li>
 </ul>
 
