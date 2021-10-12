@@ -1,7 +1,7 @@
 # Operation: Chronomancy
-Welcome to Chronos, a simple planning application which will sort out all your activites into a planner by priority. Chronos will also add breaks into your plan so you arent working 24/7.<br>
 <p align="center">
-  <img width="230" height="150" src="https://github.com/niruvibes/Operation-Chronomancy/blob/main/assets/book.png?raw=true">
+  <img width="230" height="150" src="https://github.com/niruvibes/Operation-Chronomancy/blob/main/assets/book.png?raw=true"><br>
+  Welcome to Chronos, a simple planning application which will sort out all your activites into a planner by priority. Chronos will also add breaks into your plan so you arent working 24/7.
 </p>
 
 ## Name Suggestions
