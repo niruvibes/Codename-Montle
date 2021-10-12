@@ -33,4 +33,9 @@ Saves via pickling the class object
   <li>sound effects</li>
   <li>text fonts</li>
   <li>text colours</li>
+  <li>Calendar event sharing</li>
+  <li>pinned notes/reminders</li>
+  <li>notification system</li>
+  <li>discord integration</li>
+  <li>p2p networking</li>
 </ul>
