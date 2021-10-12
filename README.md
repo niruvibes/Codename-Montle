@@ -1,5 +1,5 @@
 # Operation: Chronomancy
-POGGERS DAILY QqeuIGNFMA SBALS
+Welcome to Chronos, a simple planning application which will sort out all your activites into a planner by priority. Chronos will also add breaks into your plan so you arent working 24/7.
 ![alt text](https://github.com/niruvibes/Operation-Chronomancy/blob/main/assets/book.png?raw=true)
 
 ## Name Suggestions
