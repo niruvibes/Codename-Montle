@@ -39,3 +39,13 @@ Saves via pickling the class object
   <li>discord integration</li>
   <li>p2p networking</li>
 </ul>
+
+### Possibble avenues
+wxPython
+[9:11 PM]
+Tkinter
+[9:11 PM]
+PyQt
+[9:12 PM]
+https://realpython.com/python-gui-with-wxpython/
+
