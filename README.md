@@ -1,7 +1,7 @@
 # Codename: Montle
 <p align="center">
   <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/src/book.png"><br>
-  Welcome to Chronos, a simple planning application which will sort out all your activites into a planner by priority. Chronos will also add breaks into your plan so you arent working 24/7.
+  Welcome to Montle, a simple planning application which will sort out all your activites into a planner by priority. Montle will also add breaks into your plan so you arent working 24/7.
 </p>
 
 ## Features Brainstorm
@@ -24,6 +24,7 @@ Saves every 10 minutes
 Saves via pickling the class object
 
 ###Wanted features.
+
 <ul>
   <li>Archive Homework that you're never actually going to do</li>
   <li>Input and edit information</li>
@@ -32,4 +33,4 @@ Saves via pickling the class object
   <li>sound effects</li>
   <li>text fonts</li>
   <li>text colours</li>
-
+</ul>
