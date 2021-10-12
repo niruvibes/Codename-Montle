@@ -41,11 +41,9 @@ Saves via pickling the class object
 </ul>
 
 ### Possibble avenues
-wxPython
-[9:11 PM]
-Tkinter
-[9:11 PM]
-PyQt
-[9:12 PM]
-https://realpython.com/python-gui-with-wxpython/
+<ul>
+  <li>wxPython</li>
+  <li>Tkinter</li>
+  <li>https://realpython.com/python-gui-with-wxpython/</li>
+</ul>
 
