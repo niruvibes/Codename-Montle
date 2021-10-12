@@ -33,7 +33,7 @@ Saves via pickling the class object
   <li>sound effects</li>
   <li>text fonts</li>
   <li>text colours</li>
-  <li>Calendar event sharing</li>
+  <li>Calendar event sharing (Using a simplified code)</li>
   <li>pinned notes/reminders</li>
   <li>notification system</li>
   <li>discord integration</li>
