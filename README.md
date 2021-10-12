@@ -1,6 +1,6 @@
 # Operation: Chronomancy
 POGGERS DAILY QqeuIGNFMA SBALS
-![alt text](https://github.com/niruvibes/Operation-Chronomancy/blob/main/assets/book.gif?raw=true)
+![alt text](https://github.com/niruvibes/Operation-Chronomancy/blob/main/assets/book.png?raw=true)
 
 ## Name Suggestions
 <ul>
