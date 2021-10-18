@@ -22,6 +22,7 @@ Inbetween every task is a short break such as go get food/drink water/ standup m
 
 Saves every 10 minutes
 Saves via pickling the class object
+Each item is referred as a card
 
 ### Wanted features.
 
@@ -33,11 +34,13 @@ Saves via pickling the class object
   <li>sound effects</li>
   <li>text fonts</li>
   <li>text colours</li>
-  <li>Calendar event sharing (Using a simplified code)</li>
+  <li>Calendar event sharing (Using a simplified code/ card sharing)</li>
   <li>pinned notes/reminders</li>
   <li>notification system</li>
   <li>discord integration</li>
   <li>p2p networking</li>
+  <li>Voice recognition</li>
+  <li>cloud save</li>
 </ul>
 
 ### Possibble avenues
