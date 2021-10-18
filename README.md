@@ -39,6 +39,7 @@ Each item is referred as a card
   <li>notification system</li>
   <li>Voice recognition</li>
   <li>cloud save</li>
+  <li>Right click interface (rc empty to create new, rc a card to edit it, copy link code, create new)</li>
   <li>Tag system (customizable (Set priority (e.g. Assignment is higher than Hobby but Regular is more consistently on the generated timetable)))</li>
 </ul>
 
