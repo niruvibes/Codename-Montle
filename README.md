@@ -37,12 +37,19 @@ Each item is referred as a card
   <li>Calendar event sharing (Using a simplified code/ card sharing)</li>
   <li>pinned notes/reminders</li>
   <li>notification system</li>
-  <li>discord integration</li>
-  <li>p2p networking</li>
   <li>Voice recognition</li>
   <li>cloud save</li>
+  <li>Tag system (customizable (Set priority (e.g. Assignment is higher than Hobby but Regular is more consistently on the generated timetable)))</li>
 </ul>
 
+### For Neil to do additionally
+<ul>
+  <li>Pitch to google</li>
+  <li>p2p networking</li>
+  <li>Voice recognition</li>
+  </ul>
+  
+  
 ### Possibble avenues
 <ul>
   <li>wxPython</li>
