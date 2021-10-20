@@ -1,20 +1,21 @@
 import pygame
-import pygame_gui
 
-#Intializing pygame
+# import pygame_gui
+
+# Intializing pygame
 pygame.init()
 
-#Creating screen with size 800x600
+# Creating screen with size 800x600
 screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
 
-#Setting the title and icon
+# Setting the title and icon
 pygame.display.set_caption("Montle")
-icon = pygame.image.load('assets/smallbook.png')
+icon = pygame.image.load("assets/smallbook.png")
 pygame.display.set_icon(icon)
 pygame.display.update
 
 
-#Game loop so it doesnt close
+# Game loop so it doesnt close
 running = True
 while running:
     for event in pygame.event.get():
