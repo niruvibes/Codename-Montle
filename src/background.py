@@ -109,7 +109,7 @@ class Card:
 
 
 if __name__ == "__main__":
-    # call the functions
-    # from datetime import date
-    # print(date.today().strftime("%A"))
-    print(todays_date.year)  # int  , todays_date.month todays_date.day
+    import pickle
+
+    while True:
+        break
