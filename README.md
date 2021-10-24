@@ -4,7 +4,7 @@
   Welcome to Montle, a simple planning application which will sort out all your activites into a planner by priority. 
 </p>
 
-## ONLY FEATURES ## (no interface details)
+## ONLY FEATURES (no interface details)
 <ul>
   <li>Add, Edit, Remove Tasks</li>
   <li>List all added tasks</li>
