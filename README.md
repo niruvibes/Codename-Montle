@@ -1,6 +1,6 @@
 # Codename: Montle
 <p align="center">
-  <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/src/book.png"><br>
+  <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/assets/book.png"><br>
   Welcome to Montle, a simple planning application which will sort out all your activites into a planner by priority. 
 </p>
 
