@@ -1,8 +1,17 @@
 # Codename: Montle
 <p align="center">
-  <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/src/book.png"><br>
+  <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/assets/book.png"><br>
   Welcome to Montle, a simple planning application which will sort out all your activites into a planner by priority. 
 </p>
+
+## ONLY FEATURES (no interface details)
+<ul>
+  <li>Add, Edit, Remove Tasks</li>
+  <li>List all added tasks</li>
+  <li>Assign your self a study period</li>
+  <li>Tick off if you actually did it, if you didn't, input your excuse</li>
+</ul>
+
 
 ## Features Brainstorm
 
@@ -27,6 +36,8 @@ Each item is referred as a card
 ### Wanted features.
 
 <ul>
+  <li>Assign your self a study period, if you want if randomweighted select task</li>
+  <li>Generate a randomweighted timetable</li>
   <li>Archive Homework that you're never actually going to do</li>
   <li>Input and edit information</li>
   <li>center the text</li>
@@ -48,7 +59,7 @@ Each item is referred as a card
   <li>Pitch to google</li>
   <li>p2p networking</li>
   <li>Voice recognition</li>
-  </ul>
+</ul>
   
   
 ### Possibble avenues
