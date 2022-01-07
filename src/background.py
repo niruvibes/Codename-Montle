@@ -1,70 +1,143 @@
 from datetime import date
+from time import time
 
 todays_date = date.today()  #  todays_date.year, todays_date.month todays_date.day
 
 """
-  Add, Edit, Remove Tasks
-  List all added tasks
-  Assign your self a study period
-  Tick off if you actually did it, if you didn't, input your excuse
+
+    Add, Remove Tasks 
+        #Add
+            #Check if EVERY INPUT IS VALID
+                #Day, Month, Year, Time
+            #Make it so it doesn't need ANY OF these but can just have 1
+        #Remove
+        Edit
+    #List all added tasks
+        #By prio
+        #By Closeness
+    Generate a timetable 
+        that considerates the average time spent on each item through a given time (each day) over a week
+
+    Prints in neat format in Python Terminal. 
+        Timetable
+        Calender
+            Make it fit perfectly in the terminal and fancy. (Make sure it can print the characters if special)
+    Pygame Screen for interable options (buttons)
+        BUTTON ANIMATIONS (100% needed no matter what)  
+        Add Task
+        Scroll button when selecting existing tasks to remove
+
+
+    Indefinitely delayed
+            Assign your self a study period
+            Tick off if you actually did it, if you didn't, input your excuse
+
 """
 
 
 class Card:
-    def __init__(self, Name, DueDate=None, Priority=None):
+    # Edit CreateCard() for every change here
+    def __init__(self, Name, Day=None, Month=None, Year=None, Time=None, Priority=None):
         self._Name = Name
         self._Tags = {}
         self._CustomTagList = {}
-        # {Tag name: priority} # The highest priority will be used
-        
-        if DueDate != None:
-            self.SetSetDueDate(DueDate)
-            if Priority != None:
+
+        self.SetDueDate(Day, Month, Year)
+        if Day or Month or Year:
+            if Priority:
                 self._Priority = Priority
             else:
+                # Clumsy looking because if Prio is only date reliant if unspecified
                 self._Priority = self.DatePriorityAllocater()
         else:
-            if Priority != None:
+            if Priority:
                 self._Priority = Priority
             else:
                 self._Priority = 0
-            self._DueDate = None
-            self._DueTime = None
-            self._Time = None  # Not used in prototype
             self._Day = None
             self._Month = None
             self._Year = None
 
+        if Time:
+            self._DueTime = Time
+        else:
+            self._DueTime = "HH:MM"
+
     # Returns a priority number for "Assigned tasks" depending on how close it is to the due date
     def DatePriorityAllocater(self):
+        """
+        IF PRIO NOT GIVEN, RETURN A NUMBER THAT GETS HIGHER
+        """
 
-        # Within 3 days, Red, 8
-        # Within 1 week, Orange, 7
-        # Within 2 weeks, Green, 5
+        if self._Year != None:
+            if self._Year < todays_date.year:  # In the past
+                return 9999
+            YearDifference = self._Year - todays_date.year
+        else:
+            YearDifference = 0
 
-        # Prototype version just looks at month year and day difference
-        # Within 2 month, 5
-        # Within 1 month, 7
-        # Within 1 week, 8
-        # Within this year or next year, 3
-        # Global todays_date
+        if self._Month != None:
+            if self._Month < todays_date.month and self._Year == todays_date.year:
+                return 0
+            MonthDifference = (self._Month + 12 * YearDifference) - (todays_date.month)
+        else:
+            MonthDifference = 0
 
-        YearDifference = self._Year - todays_date.year
-        MonthDifference = self._Month - (todays_date.month + 12 * YearDifference)
-        DayDifference = self._Day - (todays_date.day + 30.5 * MonthDifference)
+        DayDifference = None
+        if self._Day != None:
+            if MonthDifference > 0:
+                DayDifference = (self._Day + 30.5 * MonthDifference) - (todays_date.day)
+            else:
+                DayDifference = (self._Day) - (todays_date.day)
+        else:
+            DayDifference = 1
 
-        if YearDifference >= 2:
+        if MonthDifference > 0:
+            return MonthDifference * 10 + DayDifference
+        else:
+            return DayDifference
+        # if YearDifference:
+        #     if YearDifference >= 1:
+        #         return 3
+        # elif MonthDifference:
+        #     if MonthDifference >= 3:
+        #         return 4
+        #     elif MonthDifference >= 1:
+        #         return 5
+        # elif DayDifference != None:
+        #     if DayDifference >= 14:
+        #         return 6
+        #     elif DayDifference >= 10:
+        #         return 7
+        #     elif DayDifference >= 5:
+        #         return 8
+        #     elif DayDifference < 3:
+        #         return 9
+
+        # The Final Cleanup ~~ ??
+        if YearDifference == 0:  # Year > x but no other info
             return 3
-        elif MonthDifference >= 3:
+        elif MonthDifference == 0:  # No Year Info, but > 3 months away
             return 4
-        elif MonthDifference >= 1:
-            return 5
-        elif DayDifference >= 14:
-            return 7
-        elif DayDifference < 14:
-            return 8
 
-    # Function that returns the highest priority of this item (for when there was multiple tags and prios to one item)
+    # Make it so any ONE of these isn't actually needed.
+    def SetDueDate(self, Day, Month, Year):
+        Temp = None
+        if not Day:
+            Day, self._Day = "DD", Temp
+        else:
+            self._Day = int(Day)
+        if not Month:
+            Month, self._Month = "MM", Temp
+        else:
+            self._Month = int(Month)
+        if not Year:
+            Year, self._Year = "YY", Temp
+        else:
+            self._Year = int(Year)
+
+        self._DueDate = "{} / {} / {}".format(Day, Month, Year)
+
     def ReturnPriority(self):
         return self._Priority
 
@@ -80,71 +153,122 @@ class Card:
 
     def RemoveCustomTag(self, CustomTagName):
         if CustomTagName in self._CustomTagList.keys():
-            self._CustomTagList.pop("CustomTagName")
+            self._CustomTagList.pop(CustomTagName)
         else:
             print('Custom tag "', CustomTagName, '" does not exist')
 
-    # Checks if the inputted date checks out. *(Should they be able to input a date in the past?, should we auto delete events that already happened?)
-    def DueDateChecker(self, Time, Day, Month, Year):
-        # Checks if the designated inputs actually make sense and returns the error message if it doesn't.
-        # You can store dates in the past however, for whatever reason
-        # if it works, SetDueDate here too
-        pass
-
-    def SetSetDueDate(self, DueDate):
-        Day, Month, Year, Time = DueDate.split()
-        self.SetDueDate(int(Day), int(Month), int(Year), Time)
-
-    # Make it so any ONE of these isn't actually needed.
-    def SetDueDate(self, Day, Month, Year, Time):
-        self._DueDate = "{} on {} / {} / {}".format(Time, Day, Month, Year)
-        self._Time = Time
-        self._Day = Day
-        self._Month = Month
-        self._Year = Year
-
     def __str__(self):
-        return "Task '{}' at {}".format(self._Name, self._DueDate)
+        return "Task '{}' at {} on {} (Prio:{})".format(
+            self._Name, self._DueTime, self._DueDate, self._Priority
+        )
 
-def SortByDate(List):
+
+# External Sorting
+def SortByDate(Fin):
     DateTrue = []
     DateFalse = []
-    for i in List:
+    for i in Fin:
         if i.ReturnDateBol():
             DateTrue.append(i)
         else:
             DateFalse.append(i)
-    DateTrue.sort(key=lambda x: x.ReturnPriority())
-    DateFalse.sort(key=lambda x: x.ReturnName())
+    DateTrue.sort(key=lambda x: x.DatePriorityAllocater())
+    DateFalse.sort(key=lambda x: x.ReturnName(), reverse=True)
     return DateTrue + DateFalse
 
 
+def RemoveByName(Name, Fin):
+    for i in Fin:
+        if i.ReturnName() == Name:
+            Fin.remove(i)
+
+
+# Multipurposed Function that will be called separate times for checking every variable
+def CreationCheck(Fin=None, Name=None, Day=None, Month=None, Year=None, Time=None):
+    if Name:
+        for i in Fin:
+            if Name == i.ReturnName():
+                print("Name Taken! Please try again with a different name.")
+                return False
+        if Name == "":
+            print("Name Invalid! Please think of a name.")
+            return False
+
+    if Day:
+        Day = int(Day)
+        if 0 > Day or Day > 32:
+            print("Date invalid! Please try again.")
+            return False
+    if Month:
+        Month = int(Month)
+        if 0 > Month or Month > 12:
+            print("Month invalid! Please try again.")
+            return False
+
+    if Time:
+        try:
+            Hours, Minutes = Time.split(":")
+        except ValueError:
+            print("Time format doesn't match! HH:MM please.")
+            return False
+
+        if not any((Hours.isdigit(), Minutes.isdigit())):
+            print("Digits only! Try again.")
+            return False
+        if len(Hours) != 2 or len(Minutes) != 2:
+            print("Time format doesn't match! HH:MM please.")
+            return False
+        if 11 < int(Hours) or int(Hours) < 0:
+            print("Get the right hours")
+            return False
+        if 60 < int(Minutes) or int(Minutes) < 0:
+            print("Get the right minutes.")
+            return False
+    return True
+
+
+def EditCard():
+    pass
+
+
 if __name__ == "__main__":
-    #import pickle
-    #pickle.dump(LobbyArt, open("MapSaveFile", "wb"))
-    #ThePlayer = pickle.load(open("PlayerSaveFile", "rb"))
-    
-    # Card(Name, DueDate=None, Priority=None)
+    # import pickle
+    # pickle.dump(LobbyArt, open("MapSaveFile", "wb"))
+    # ThePlayer = pickle.load(open("PlayerSaveFile", "rb"))
+
+    # Card(Name, Day=None, Month=None, Year=None, Time=None, Priority=None):)
+    Fin = []
     Test1 = Card("Test1")
-    print (Test1)
-    print (Test1.ReturnPriority(), '\n')
+    print(Test1)
+    print(Test1.ReturnPriority(), "\n")
 
-    Test2 = Card("Test2", "31 01 2022 12:30")
-    print (Test2)
-    print (Test2.ReturnPriority(), '\n')
+    Test2 = Card("Test2", "31", "01", "2022", "12:30")
+    print(Test2)
+    print(Test2.ReturnPriority(), "\n")
 
-    Test3 = Card("Test3", None, 9)
-    print (Test3)
-    print (Test3.ReturnPriority(), '\n')
+    if CreationCheck(Fin, "Test3", None, None, "2022", "11:34"):
+        Test3 = Card("Test3", None, None, "2022", None)
+        print(Test3)
+        print(Test3.ReturnPriority(), "\n")
+        Fin = [Test1, Test2, Test3]
 
-    TestList = [Test1, Test2, Test3]
-
-    #Sort by Prio
-    TestList.sort(key=lambda x: x.ReturnPriority())
-    for x in TestList:
+    if CreationCheck(Fin, "Test4", None, "08", None, "00:00"):
+        Test4 = Card("Test4", None, "08", None, "00:00")
+        Fin = [Test1, Test2, Test3, Test4]
+    if CreationCheck(Fin, "Test5", None, "08", None, "00:00"):
+        Test5 = Card("Test5", None, "08", None, "00:00")
+        Fin.append(Test5)
+    if CreationCheck(Fin, "Test6", "10", None, None, "00:00"):
+        Test6 = Card("Test6", "10", None, None, "00:00")
+        Fin.append(Test6)
+    # Sort by Prio
+    print("Sort by Prio:")
+    Fin.sort(key=lambda x: x.ReturnPriority(), reverse=True)
+    for x in Fin:
         print(x)
-    print('\n')
+    print("\n")
 
-    #Sort by DueDate
-    for x in SortByDate(TestList):
+    # Sort by DueDate
+    print("Sort by DueDate:")
+    for x in SortByDate(Fin):
         print(x)

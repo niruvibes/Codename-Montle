@@ -1,14 +1,16 @@
 import pygame
-from pygame import surface #import pygame
-import background
+from pygame import surface  # import pygame
+import background as b
 import sys
 import time
 
 
-pygame.init() #initialize pygame module
+pygame.init()  # initialize pygame module
 
 # Creating screen with size 800x600 as default with resizable ability
-screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE) #add ", pygame.NOFRAME" to remove frame 
+screen = pygame.display.set_mode(
+    (800, 600)
+)  # add ", pygame.NOFRAME" to remove frame
 
 # Setting the title and icon
 pygame.display.set_caption("Montle")
@@ -26,5 +28,5 @@ while running:
         if event.type == pygame.FULLSCREEN:
             pygame.display.toggle_fullscreen
 
-    screen.fill(pygame.Color("LIGHTBLUE")) 
+    screen.fill(pygame.Color("LIGHTBLUE"))
     pygame.display.update()
