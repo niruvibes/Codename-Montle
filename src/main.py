@@ -8,9 +8,7 @@ import time
 pygame.init()  # initialize pygame module
 
 # Creating screen with size 800x600 as default with resizable ability
-screen = pygame.display.set_mode(
-    (800, 600)
-)  # add ", pygame.NOFRAME" to remove frame
+screen = pygame.display.set_mode((800, 600))  # add ", pygame.NOFRAME" to remove frame
 
 # Setting the title and icon
 pygame.display.set_caption("Montle")

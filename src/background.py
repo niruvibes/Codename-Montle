@@ -1,5 +1,6 @@
 from datetime import date
 from time import time
+import math
 
 todays_date = date.today()  #  todays_date.year, todays_date.month todays_date.day
 
@@ -44,7 +45,7 @@ class Card:
 
         self.SetDueDate(Day, Month, Year)
         if Day or Month or Year:
-            if Priority:
+            if Priority:  # If a prio is manually given
                 self._Priority = Priority
             else:
                 # Clumsy looking because if Prio is only date reliant if unspecified
@@ -53,7 +54,7 @@ class Card:
             if Priority:
                 self._Priority = Priority
             else:
-                self._Priority = 0
+                self._Priority = math.inf
             self._Day = None
             self._Month = None
             self._Year = None
@@ -71,7 +72,7 @@ class Card:
 
         if self._Year != None:
             if self._Year < todays_date.year:  # In the past
-                return 9999
+                return math.inf
             YearDifference = self._Year - todays_date.year
         else:
             YearDifference = 0
@@ -92,33 +93,13 @@ class Card:
         else:
             DayDifference = 1
 
+        if self._Day == None and self._Month == None and self._Year:
+            return (YearDifference + 1) * (12 * 30)
+
         if MonthDifference > 0:
-            return MonthDifference * 10 + DayDifference
+            return MonthDifference * 30 + DayDifference
         else:
             return DayDifference
-        # if YearDifference:
-        #     if YearDifference >= 1:
-        #         return 3
-        # elif MonthDifference:
-        #     if MonthDifference >= 3:
-        #         return 4
-        #     elif MonthDifference >= 1:
-        #         return 5
-        # elif DayDifference != None:
-        #     if DayDifference >= 14:
-        #         return 6
-        #     elif DayDifference >= 10:
-        #         return 7
-        #     elif DayDifference >= 5:
-        #         return 8
-        #     elif DayDifference < 3:
-        #         return 9
-
-        # The Final Cleanup ~~ ??
-        if YearDifference == 0:  # Year > x but no other info
-            return 3
-        elif MonthDifference == 0:  # No Year Info, but > 3 months away
-            return 4
 
     # Make it so any ONE of these isn't actually needed.
     def SetDueDate(self, Day, Month, Year):
@@ -143,7 +124,7 @@ class Card:
 
     # Helper Function for SortByDate only
     def ReturnDateBol(self):
-        if self._DueDate != None:
+        if self._Day or self._Month or self._Year:
             return True
         else:
             return False
@@ -173,7 +154,7 @@ def SortByDate(Fin):
         else:
             DateFalse.append(i)
     DateTrue.sort(key=lambda x: x.DatePriorityAllocater())
-    DateFalse.sort(key=lambda x: x.ReturnName(), reverse=True)
+    DateFalse.sort(key=lambda x: x.ReturnName(), reverse=False)
     return DateTrue + DateFalse
 
 
@@ -263,7 +244,7 @@ if __name__ == "__main__":
         Fin.append(Test6)
     # Sort by Prio
     print("Sort by Prio:")
-    Fin.sort(key=lambda x: x.ReturnPriority(), reverse=True)
+    Fin.sort(key=lambda x: x.ReturnPriority(), reverse=False)
     for x in Fin:
         print(x)
     print("\n")
