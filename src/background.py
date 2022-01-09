@@ -3,6 +3,7 @@ from time import time, time_ns
 import math
 import random
 
+
 # MONTLE, The slightly more advanced ToDo List
 # Every month has 30.42 days, fuck u
 todays_date = date.today()  #  todays_date.year, todays_date.month todays_date.day
@@ -54,7 +55,7 @@ class Card:
         self._ManualPrio = False
         self.SetDueDate(Day, Month, Year)
         if Priority:  # If a prio is manually given
-            self._Priority = Priority
+            self._Priority = int(Priority)
             self._ManualPrio = True
         elif Day or Month or Year:  # unless they are all none
             self._Priority = self.DateAllocatedPriorityer()
@@ -264,46 +265,50 @@ def RemoveByName(Name, Fin):
 
 # Multipurposed Function that will be called separate times for checking every variable
 def CreationCheck(Fin=None, Name=None, Day=None, Month=None, Year=None, Time=None):
-    if Name:
-        for i in Fin:
-            if Name == i.ReturnName():
-                print("Name Taken! Please try again with a different name.")
+    try:
+        if Name:
+            for i in Fin:
+                if Name == i.ReturnName():
+                    print("Name Taken! Please try again with a different name.")
+                    return False
+            if Name == "":
+                print("Name Invalid! Please think of a name.")
                 return False
-        if Name == "":
-            print("Name Invalid! Please think of a name.")
-            return False
 
-    if Day:
-        Day = int(Day)
-        if 0 > Day or Day > 32:
-            print("Date invalid! Please try again.")
-            return False
-    if Month:
-        Month = int(Month)
-        if 0 > Month or Month > 12:
-            print("Month invalid! Please try again.")
-            return False
+        if Day:
+            Day = int(Day)
+            if 0 > Day or Day > 32:
+                print("Date invalid! Please try again.")
+                return False
+        if Month:
+            Month = int(Month)
+            if 0 > Month or Month > 12:
+                print("Month invalid! Please try again.")
+                return False
 
-    if Time:
-        try:
-            Hours, Minutes = Time.split(":")
-        except ValueError:
-            print("Time format doesn't match! HH:MM please.")
-            return False
+        if Time:
+            try:
+                Hours, Minutes = Time.split(":")
+            except ValueError:
+                print("Time format doesn't match! HH:MM please.")
+                return False
 
-        if not any((Hours.isdigit(), Minutes.isdigit())):
-            print("Digits only! Try again.")
-            return False
-        if len(Hours) != 2 or len(Minutes) != 2:
-            print("Time format doesn't match! HH:MM please.")
-            return False
-        if 24 < int(Hours) and int(Hours) < 0:
-            print("Get the right hours")
-            return False
-        if 60 < int(Minutes) and int(Minutes) < 0:
-            print("Get the right minutes.")
-            return False
-    return True
+            if not any((Hours.isdigit(), Minutes.isdigit())):
+                print("Digits only! Try again.")
+                return False
+            if len(Hours) != 2 or len(Minutes) != 2:
+                print("Time format doesn't match! HH:MM please.")
+                return False
+            if 24 < int(Hours) and int(Hours) < 0:
+                print("Get the right hours")
+                return False
+            if 60 < int(Minutes) and int(Minutes) < 0:
+                print("Get the right minutes.")
+                return False
+        return True
+    except ValueError:
+        print("numbers go into the number parts please")
+        return False
 
 
 def EditCard(
@@ -416,7 +421,7 @@ def TtSetTimes(times):
         Hours, Minutes = TimeFrames[0].split(":")
         Hours1, Minutes = TimeFrames[1].split(":")
         TotalHours.append(int(Hours1) - int(Hours))
-    return sum(TotalHours)
+    return sum(TotalHours) * 2
 
 
 def TtUpdate(Events, Fin, RemoveName, Times):
@@ -430,43 +435,167 @@ def TtUpdate(Events, Fin, RemoveName, Times):
             Events[index] = TempEvents[index]
     return Events
 
+
 def AddTime(Hr, Min):
-    if Min == 30:
-        return Hr+1, 0
+    if int(Min) == 30:
+        return int(Hr) + 1, "00"
     else:
-        return Hr, Min +30
+        return Hr, 30
+
 
 def PythonTerminalPrint(events, Times):  # Helper function for TtGenerate()
     # 30 lines 120 characters
+    if not events or not Times:
+        print(" " * 42, "TimeTable Invalid\n")
+        print(" " * 34, "Please input cards and timeframes")
+        return
     Time = TtSetTimes(Times)
 
-    print(" " * 50, "TimeTable")
+    print(" " * 50, "TimeTable\n")
     # [("00:00", "03:00"), ("14:00", "17:00")]
-    Hr, Min = map(int, Times[0][0].split(":"))
+    c = 0
+    Hr, Min = Times[0][0].split(":")
+    Hr = int(Hr)
+
     for i in range(Time):
-        
-        print(Min)
+        if int(Hr) < 10:
+            Spaces = 30
+        else:
+            Spaces = 29
+        print(" " * Spaces, "{}:{}".format(Hr, Min), " " * 16, events[i])
+        Hr, Min = AddTime(Hr, Min)
+        try:
+            TempHr, TempMin = map(int, Times[c][1].split(":"))
+            if int(Hr) == TempHr and int(Min) == TempMin:
+                c += 1
+                Hr, Min = Times[c][0].split(":")
+        except IndexError:
+            continue
+
 
 # never bug checked but probably works
-def DailyPriorityUpdate(Fin=[], SavedEvents=[], SavedDay=None, SavedTimes=None):
-    if SavedDay:
-        if SavedDay != todays_date.day:
-            for i in Fin:
-                if not i.ReturnManualPrio():
-                    TempPrio = i.ReturnPriority()
-                    i.ResetPrio()
-                    if i.ReturnPriority() > TempPrio or i.ReturnPriority() < 0:
-                        Fin.remove(i)
-        Time = TtSetTimes(SavedTimes)
-        if len(SavedEvents) > Time*2:
-            TempEvents = TtGenerate(Fin, Times)
-            while len(SavedEvents) > Time*2:
-                SavedEvents.pop()
-            while len(SavedEvents) < Time*3:
-                SavedEvents.append(random.choice(TempEvents))
+def DailyPriorityUpdate(Fin, SavedEvents, SavedDay, SavedTimes):
+
+    if SavedDay != todays_date.day:
+        for i in Fin:
+            if not i.ReturnManualPrio():
+                TempPrio = i.ReturnPriority()
+                i.ResetPrio()
+                if i.ReturnPriority() > TempPrio or i.ReturnPriority() < 0:
+                    Fin.remove(i)
+    Time = TtSetTimes(SavedTimes)
+    if len(SavedEvents) > Time * 2:
+        TempEvents = TtGenerate(Fin, Times)
+        while len(SavedEvents) > Time * 2:
+            SavedEvents.pop()
+        while len(SavedEvents) < Time * 3:
+            SavedEvents.append(random.choice(TempEvents))
     return Fin, SavedEvents, SavedTimes
-def Save():
-    pass
+
+
+def PrintControls(w, Fin, Events, Times):
+    if w == "MainMenu":
+        print(
+            """
+Input 1) Create card
+Input 2) Remove a Card
+Input 3) Add Timeframes
+Input 4) Remove Timeframes
+        """
+        )
+    elif w == "CreateCard":
+        Name = False
+        while not Name:
+            print("Input) Name")
+            Name = input()
+        print("Input) Day (DueDate) (DD/MM/YYYY) ")
+        Day = input()
+        print("Input) Month (DueDate) (MM/YYYY) ")
+        Month = input()
+        print("Input) Year (DueDate) (YYYY) ")
+        Year = input()
+        print("Input) Time due (HH:MM in 24 hour)")
+        Time = input()
+        print("Input) Manual Priority")
+        Prio = input()
+
+        if CreationCheck(Fin, Name, Day, Month, Year, Time):
+            return Card(Name, Day, Month, Year, Time, Prio)
+        return
+    elif w == "RemoveCard":
+        Fin = SortByPriority(Fin)
+        for c, i in enumerate(Fin):
+            print(f" {c+1}) ", " " * 27, i)
+        if len(Fin) != 0:
+            Temp = input()
+            if Temp:
+                if int(Temp) <= len(Fin) and int(Temp) > 0:
+                    Events = TtUpdate(
+                        Events, Fin, Fin.pop(Temp - 1).ReturnName(), Times
+                    )
+        return Fin, Events
+    elif w == "Timeframes":
+        print("Input) Start time (HH:MM) in 24 hours")
+        temp = input()
+        
+        try:
+            hrs, mins = temp.split(":")
+            if (
+                len(str(int(hrs))) in (1, 2)
+                and len(str(int(mins))) in (1, 2)
+                and int(mins) in (30, 0)
+                and int(hrs) < 24
+                and int(hrs) >= 0
+            ):
+                print("Input) End time (HH:MM) in 24 hours")
+                temp1 = input()
+                hrs1, mins1 = temp.split(":")
+                if (
+                    len(str(int(hrs1))) in (1, 2)
+                    and len(str(int(mins1))) in (1, 2)
+                    and int(mins1) in (30, 0)
+                    and int(hrs1) < 24
+                    and int(hrs1) >= 0
+                    and int(hrs) <= int(hrs1)
+                    
+                ):
+                    if int(hrs) == int(hrs1) and int(mins) > int(mins1):
+                        print("Start time isn't stop time")
+                        return None
+                    return (temp, temp1)
+                else:
+                    print("Wrong.")
+            else:
+                print("wrong")
+        except ValueError:
+            print("Wrong.")
+            return None
+
+    elif w == "RTimeframes":
+        for c, i in enumerate(Times):
+            print(f" {c+1}) ", " " * 27, i)
+        if len(Times) != 0:
+            Temp = input()
+            if Temp:
+                if int(Temp) <= len(Fin) and int(Temp) > 0:
+                    Times.pop(c)
+                    return Times
+    
+
+
+def Save(Fin, Events, SavedDay, Times):
+    import pickle
+
+    Save = open("assets/TestSave", "wb")
+    wow = (Fin, Events, SavedDay, Times)
+    pickle.dump(wow, Save)
+    Save.close()
+
+
+Test1 = Card("Montle", "10", "01", "2022")
+Test2 = Card("Test2", "010", "03", "2022", "12:30")
+Test3 = Card("Test3", "29", "01", "2022", None)
+Fin = [Test1, Test2, Test3]
 if __name__ == "__main__":
     # import pickle
     # pickle.dump(LobbyArt, open("MapSaveFile", "wb"))
@@ -481,7 +610,7 @@ if __name__ == "__main__":
     Test2 = Card(
         "Test2",
         "010",
-        "01",
+        "03",
         "2022",
         "12:30",
     )
@@ -534,7 +663,7 @@ if __name__ == "__main__":
     for i in Events:
         print(i)
 
-    DailyPriorityUpdate(Events, 3)
+    # DailyPriorityUpdate(Events, 3)
     print("\n")
     for i in Events:
         print(i)

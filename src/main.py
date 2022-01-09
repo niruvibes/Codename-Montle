@@ -1,30 +1,52 @@
-import pygame
-from pygame import surface  # import pygame
 import background as b
-import sys
-import time
+import pickle
+from datetime import date
 
+# TestSave = open("assets/TestSave", "wb")
+# wow = "wow"
+# pickle.dump(wow, TestSave)
+# TestSave.close()
+try:
+    Save = open("assets/SavedDates", "rb")
+    wow = "wow"
+    Fin, Events, SavedDay, Times = pickle.load(Save)
+    Save.close()
+    b.DailyPriorityUpdate(Fin, Events, SavedDay, Times)
+except FileNotFoundError:
+    Fin = []
+    Events = []
+    Times = []
+todays_date = date.today()
 
-pygame.init()  # initialize pygame module
+# Test
+while True:  # Main Screen
+    b.PythonTerminalPrint(Events, Times)
+    b.PrintControls("MainMenu", Fin, Events, Times)
+    b.Save(Fin, Events, todays_date.day, Times)
+    Input = input()
+    print("\n" * 2)
+    if not Input:
+        b.Save(Fin, Events, todays_date.day, Times)
+        exit()
+    if Input == "1":
+        TempCard = b.PrintControls("CreateCard", Fin, Events, Times)
 
-# Creating screen with size 800x600 as default with resizable ability
-screen = pygame.display.set_mode((800, 600))  # add ", pygame.NOFRAME" to remove frame
+        if TempCard:
+            Fin.append(TempCard)
+            if Times:
+                Events = b.TtGenerate(Fin, Times)
+    if Input == "2":
+        Fin, Events = b.PrintControls("RemoveCard", Fin, Events, Times)
+    if Input == "3":
+        TempTime = b.PrintControls("Timeframes", Fin, Events, Times)
+        if TempTime:
+            Times.append(TempTime)
+    if Input == "4":
+        TempTime = b.PrintControls("RTimeframes", Fin, Events, Times)
 
-# Setting the title and icon
-pygame.display.set_caption("Montle")
-icon = pygame.image.load("assets/smallbook.png")
-pygame.display.set_icon(icon)
-pygame.display.update
-
-
-# Game loop so it doesnt close
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.FULLSCREEN:
-            pygame.display.toggle_fullscreen
-
-    screen.fill(pygame.Color("LIGHTBLUE"))
-    pygame.display.update()
+        """
+Input 1) Create card
+Input 2) Remove a Card
+Input 3) Add Timeframes
+Input 4) Remove Timeframes
+        """
