@@ -1,10 +1,5 @@
-import os
-
-# Get the size
-# of the terminal
-size = os.get_terminal_size()
+import math
 
 
-# Print the size
-# of the terminal
-print(size)
+if math.inf == math.inf + 1000:
+    print("wow")

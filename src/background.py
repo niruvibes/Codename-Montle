@@ -51,22 +51,15 @@ class Card:
         self._Name = Name
         self._Tags = {}
         self._CustomTagList = {}
-
+        self._ManualPrio = False
         self.SetDueDate(Day, Month, Year)
-        if Day or Month or Year:
-            if Priority:  # If a prio is manually given
-                self._Priority = Priority
-            else:
-                # Clumsy looking because if Prio is only date reliant if unspecified
-                self._Priority = self.DateAllocatedPriorityer()
+        if Priority:  # If a prio is manually given
+            self._Priority = Priority
+            self._ManualPrio = True
+        elif Day or Month or Year:  # unless they are all none
+            self._Priority = self.DateAllocatedPriorityer()
         else:
-            if Priority:
-                self._Priority = Priority
-            else:
-                self._Priority = math.inf
-            self._Day = None
-            self._Month = None
-            self._Year = None
+            self._Priority = math.inf
 
         if Time:
             self._DueTime = Time
@@ -77,8 +70,22 @@ class Card:
     def DateAllocatedPriorityer(self):
         """
         IF PRIO NOT GIVEN, HIGHER THE NUMBER = not important. Returns the day difference
-        prehaps the most convoluted way of doing this, not going to fix unless it breaks tho
+        "2", "01", "2022"
         """
+        # IF IN THE PAST
+        if self._Year:
+            if self._Year < todays_date.year:
+                return math.inf
+        if self._Month and self._Year:
+            if self._Month < todays_date.month and self._Year == todays_date.year:
+                return math.inf
+        if self._Day and self._Month and self._Year:
+            if (
+                self._Day < todays_date.day
+                and self._Month == todays_date.month
+                and self._Year == todays_date.year
+            ):
+                return math.inf
         # None cases, assumes next possible date
         if not self._Day and not self._Month:
             if self._Year > todays_date.year:
@@ -90,35 +97,20 @@ class Card:
                         - (30.42 - todays_date.day)
                     )
                 )
-            elif self._Year == todays_date.year:
+            if self._Year == todays_date.year:
                 return 4  # The highest number that isn't guaranteed to be timetabled
-        elif not self._Day and not self._Year:
+        if not self._Day and not self._Year:
             if self._Month > todays_date.month:
                 return int((30.42 * self._Month) - (30.42 * todays_date.month))
-            elif self._Month < todays_date.month:
+            if self._Month < todays_date.month:
                 return int((30.42 * self._Month) + (365 - 30.42 * todays_date.month))
-            elif self._Month == todays_date.month:
+            if self._Month == todays_date.month:
                 return 4
-        elif not self._Month and not self._Year:
+        if not self._Month and not self._Year:
             if self._Day >= todays_date.day:
                 return int(self._Day - todays_date.day)
-            elif self._Day < todays_date.day:
+            if self._Day < todays_date.day:
                 return int(self._Day + (30.42 - todays_date.day))
-
-        # IF IN THE PAST
-        if self._Year:
-            if self._Year < todays_date.year:
-                return math.inf
-        elif self._Month and self._Year:
-            if self._Month < todays_date.month and self._Year == todays_date.year:
-                return math.inf
-        elif self._Day and self._Month and self._Year:
-            if (
-                self._Day < todays_date.day
-                and self._Month == todays_date.month
-                and self._Year == todays_date.year
-            ):
-                return math.inf
 
         # None Cases if singular
         if not self._Day:
@@ -134,7 +126,7 @@ class Card:
                     return 365 * (self._Year - todays_date.year)
                 elif self._Year == todays_date.year:
                     return 0
-            elif self._Day > todays_date.day:
+            if self._Day > todays_date.day:
                 if self._Year > todays_date.year:
                     return (
                         self._Day
@@ -143,7 +135,7 @@ class Card:
                     )
                 elif self._Year == todays_date.year:
                     return self._Day - todays_date.day
-            elif self._Day < todays_date.day:
+            if self._Day < todays_date.day:
                 if self._Year > todays_date.year:
                     return int(
                         self._Year
@@ -151,7 +143,7 @@ class Card:
                         - todays_date.day
                         + 365 * (self._Year - todays_date.year)
                     )
-                elif self._Year == todays_date.year:
+                if self._Year == todays_date.year:
                     return int(self._Year + 30.42 - todays_date.day)
         if not self._Year:
             if self._Year > todays_date.year:
@@ -161,7 +153,7 @@ class Card:
                     - 30.45
                     - todays_date.day
                 )
-            elif self._Year == todays_date.year:
+            if self._Year == todays_date.year:
                 return 4
         # All dates Provided
 
@@ -211,6 +203,9 @@ class Card:
     def ReturnName(self):
         return self._Name
 
+    def ReturnManualPrio(self):
+        return self._ManualPrio
+
     # EditCard helpers
     def CgName(self, CgName):
         self._Name = CgName
@@ -232,9 +227,11 @@ class Card:
 
     def CgPrio(self, CgPrio):
         self._Priority = CgPrio
+        self._ManualPrio = True
 
     def ResetPrio(self):
         self._Priority = self.DateAllocatedPriorityer()
+        self._ManualPrio = False
 
     def __str__(self):
         return "Task '{}' at {} on {} (Prio:{})".format(
@@ -433,17 +430,43 @@ def TtUpdate(Events, Fin, RemoveName, Times):
             Events[index] = TempEvents[index]
     return Events
 
+def AddTime(Hr, Min):
+    if Min == 30:
+        return Hr+1, 0
+    else:
+        return Hr, Min +30
 
-def PythonTerminalPrint(list):  # Helper function for TtGenerate()
+def PythonTerminalPrint(events, Times):  # Helper function for TtGenerate()
     # 30 lines 120 characters
+    Time = TtSetTimes(Times)
 
+    print(" " * 50, "TimeTable")
+    # [("00:00", "03:00"), ("14:00", "17:00")]
+    Hr, Min = map(int, Times[0][0].split(":"))
+    for i in range(Time):
+        
+        print(Min)
+
+# never bug checked but probably works
+def DailyPriorityUpdate(Fin=[], SavedEvents=[], SavedDay=None, SavedTimes=None):
+    if SavedDay:
+        if SavedDay != todays_date.day:
+            for i in Fin:
+                if not i.ReturnManualPrio():
+                    TempPrio = i.ReturnPriority()
+                    i.ResetPrio()
+                    if i.ReturnPriority() > TempPrio or i.ReturnPriority() < 0:
+                        Fin.remove(i)
+        Time = TtSetTimes(SavedTimes)
+        if len(SavedEvents) > Time*2:
+            TempEvents = TtGenerate(Fin, Times)
+            while len(SavedEvents) > Time*2:
+                SavedEvents.pop()
+            while len(SavedEvents) < Time*3:
+                SavedEvents.append(random.choice(TempEvents))
+    return Fin, SavedEvents, SavedTimes
+def Save():
     pass
-
-
-def DailyPriorityUpdate():
-    pass
-
-
 if __name__ == "__main__":
     # import pickle
     # pickle.dump(LobbyArt, open("MapSaveFile", "wb"))
@@ -455,11 +478,17 @@ if __name__ == "__main__":
     print(Test1)
     print(Test1.ReturnPriority(), "\n")
 
-    Test2 = Card("Test2", "05", "02", "2022", "12:30", 7)
+    Test2 = Card(
+        "Test2",
+        "010",
+        "01",
+        "2022",
+        "12:30",
+    )
     print(Test2)
     print(Test2.ReturnPriority(), "\n")
 
-    if CreationCheck(Fin, "Test3", "29", "01", "2022", "11:34"):
+    if CreationCheck(Fin, "Test3", None, None, None, "11:34"):
         Test3 = Card("Test3", "29", "01", "2022", None)
         print(Test3)
         print(Test3.ReturnPriority(), "\n")
@@ -505,8 +534,13 @@ if __name__ == "__main__":
     for i in Events:
         print(i)
 
+    DailyPriorityUpdate(Events, 3)
+    print("\n")
+    for i in Events:
+        print(i)
+
     # To python terminal perfection
     Times = [("00:00", "03:00"), ("14:00", "17:00")]
-    PythonTerminalPrint(TtGenerate(Fin, Times))
+    PythonTerminalPrint(TtGenerate(Fin, Times), Times)
 
-    # input()
+    input()
