@@ -339,6 +339,13 @@ def EditCard(
             return
 
 
+def RemoveCard(Fin, RemoveName):
+    for i in Fin:
+        if i.ReturnName() == RemoveName:
+            Fin.remove(i)
+    return Fin
+
+
 def SortByPriority(Fin):
     return sorted(Fin, key=lambda x: x.ReturnPriority(), reverse=False)
 
@@ -415,8 +422,21 @@ def TtSetTimes(times):
     return sum(TotalHours)
 
 
+def TtUpdate(Events, Fin, RemoveName, Times):
+    Fin = RemoveCard(Fin, RemoveName)
+    # ProbEventList = TtProbListGen(Fin, Time)
+    TempEvents = TtGenerate(Fin, Times)
+    for i in Events:
+        if i.ReturnName() == RemoveName:
+            # Events.remove(i)
+            index = Events.index(i)
+            Events[index] = TempEvents[index]
+    return Events
+
+
 def PythonTerminalPrint(list):  # Helper function for TtGenerate()
-    #30 lines 120 characters
+    # 30 lines 120 characters
+
     pass
 
 
@@ -475,12 +495,18 @@ if __name__ == "__main__":
     # Timetabling! # ONLY READS FOR ONE HOURS TIMEFRAMES
     print("\n")
     Times = [("00:00", "03:00")]
-    for i in TtGenerate(Fin, Times):
+    Events = TtGenerate(Fin, Times)
+    for i in Events:
+        print(i)
+
+    print("\n")
+    Events = TtUpdate(Events, Fin, "Montle", Times)
+    Times = [("00:00", "03:00"), ("14:00", "17:00")]
+    for i in Events:
         print(i)
 
     # To python terminal perfection
-
     Times = [("00:00", "03:00"), ("14:00", "17:00")]
     PythonTerminalPrint(TtGenerate(Fin, Times))
 
-    input()
+    # input()
