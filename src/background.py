@@ -46,6 +46,14 @@ todays_date = date.today()  #  todays_date.year, todays_date.month todays_date.d
 """
 
 
+class Empty:
+    def ReturnName(self):
+        return "Need more cards"
+
+    def __str__(self):
+        return "Need more cards"
+
+
 class Card:
     # Edit CreateCard() for every change here
     def __init__(self, Name, Day=None, Month=None, Year=None, Time=None, Priority=None):
@@ -88,7 +96,9 @@ class Card:
             ):
                 return math.inf
         # None cases, assumes next possible date
-        if not self._Day and not self._Month:
+        if (
+            not self._Day and not self._Month
+        ):  # if self._day and self._Month are None, Year must be something1
             if self._Year > todays_date.year:
                 return int(
                     (365 * (self._Year - todays_date.year))
@@ -99,14 +109,14 @@ class Card:
                     )
                 )
             if self._Year == todays_date.year:
-                return 4  # The highest number that isn't guaranteed to be timetabled
+                return 15  
         if not self._Day and not self._Year:
             if self._Month > todays_date.month:
                 return int((30.42 * self._Month) - (30.42 * todays_date.month))
             if self._Month < todays_date.month:
                 return int((30.42 * self._Month) + (365 - 30.42 * todays_date.month))
             if self._Month == todays_date.month:
-                return 4
+                return 10
         if not self._Month and not self._Year:
             if self._Day >= todays_date.day:
                 return int(self._Day - todays_date.day)
@@ -118,7 +128,7 @@ class Card:
             YearDiff = self._Year - todays_date.year
             MonthDiff = (self._Month + (12 * YearDiff)) - (todays_date.month)
             if MonthDiff == 0:
-                return 4
+                return 10
             else:
                 return int(MonthDiff * 30.42)
         if not self._Month:
@@ -155,7 +165,7 @@ class Card:
                     - todays_date.day
                 )
             if self._Year == todays_date.year:
-                return 4
+                return 15
         # All dates Provided
 
         else:
@@ -235,9 +245,16 @@ class Card:
         self._ManualPrio = False
 
     def __str__(self):
-        return "Task '{}' at {} on {} (Prio:{})".format(
-            self._Name, self._DueTime, self._DueDate, self._Priority
+        Details = "on {} at {} (Prio:{})".format(
+            self._DueDate, self._DueTime, self._Priority
         )
+
+        if len(self._Name) < 20:
+            c = 20
+            whitespaces = " " * (c - len(self._Name))
+        else:
+            whitespaces = " "
+        return "'{}'{}{}".format(self._Name, whitespaces, Details)
 
     def __repr__(self):
         return self._Name
@@ -356,6 +373,8 @@ def TtGenerate(Fin, Times):  # Returns Timetable str
     Time = TtSetTimes(Times)
     EventProbList = TtProbListGen(Fin, Times)
     Events = TtTimetableImportant(Fin, Time)
+    if not EventProbList:
+        EventProbList.append(Empty())
     if len(Events) < Time * 3:
         for i in range(Time * 3 - len(Events)):
             Events.append(random.choice(EventProbList))
@@ -372,9 +391,12 @@ def TtProbListGen(Fin, Times):
 
     # Creating the list to choose events from
     for i in TempFin:
-        if i.ReturnPriority() < 4:
-            break
-        elif i.ReturnPriority() >= TempPrio - 7:
+        try:
+            if i.DateAllocatedPriorityer() < 4:
+                continue
+        except TypeError:
+            pass
+        if i.ReturnPriority() >= TempPrio - 7:
             TempHold.append(i)
         else:
             TempPrio = i.ReturnPriority()
@@ -428,11 +450,12 @@ def TtUpdate(Events, Fin, RemoveName, Times):
     Fin = RemoveCard(Fin, RemoveName)
     # ProbEventList = TtProbListGen(Fin, Time)
     TempEvents = TtGenerate(Fin, Times)
-    for i in Events:
-        if i.ReturnName() == RemoveName:
-            # Events.remove(i)
-            index = Events.index(i)
-            Events[index] = TempEvents[index]
+    if TempEvents:
+        for i in Events:
+            if i.ReturnName() == RemoveName:
+                # Events.remove(i)
+                index = Events.index(i)
+                Events[index] = TempEvents[index]
     return Events
 
 
@@ -485,7 +508,7 @@ def DailyPriorityUpdate(Fin, SavedEvents, SavedDay, SavedTimes):
                     Fin.remove(i)
     Time = TtSetTimes(SavedTimes)
     if len(SavedEvents) > Time * 2:
-        TempEvents = TtGenerate(Fin, Times)
+        TempEvents = TtGenerate(Fin, SavedTimes)
         while len(SavedEvents) > Time * 2:
             SavedEvents.pop()
         while len(SavedEvents) < Time * 3:
@@ -501,6 +524,7 @@ Input 1) Create card
 Input 2) Remove a Card
 Input 3) Add Timeframes
 Input 4) Remove Timeframes
+Input  ) Save and Exit
         """
         )
     elif w == "CreateCard":
@@ -531,13 +555,13 @@ Input 4) Remove Timeframes
             if Temp:
                 if int(Temp) <= len(Fin) and int(Temp) > 0:
                     Events = TtUpdate(
-                        Events, Fin, Fin.pop(Temp - 1).ReturnName(), Times
+                        Events, Fin, Fin.pop(int(Temp) - 1).ReturnName(), Times
                     )
         return Fin, Events
     elif w == "Timeframes":
         print("Input) Start time (HH:MM) in 24 hours")
         temp = input()
-        
+
         try:
             hrs, mins = temp.split(":")
             if (
@@ -557,7 +581,6 @@ Input 4) Remove Timeframes
                     and int(hrs1) < 24
                     and int(hrs1) >= 0
                     and int(hrs) <= int(hrs1)
-                    
                 ):
                     if int(hrs) == int(hrs1) and int(mins) > int(mins1):
                         print("Start time isn't stop time")
@@ -577,10 +600,12 @@ Input 4) Remove Timeframes
         if len(Times) != 0:
             Temp = input()
             if Temp:
-                if int(Temp) <= len(Fin) and int(Temp) > 0:
+                if int(Temp) <= len(Times) and int(Temp) > 0:
                     Times.pop(c)
+                    print("removing time")
                     return Times
-    
+                else:
+                    print("Could not")
 
 
 def Save(Fin, Events, SavedDay, Times):
@@ -592,10 +617,12 @@ def Save(Fin, Events, SavedDay, Times):
     Save.close()
 
 
-Test1 = Card("Montle", "10", "01", "2022")
-Test2 = Card("Test2", "010", "03", "2022", "12:30")
-Test3 = Card("Test3", "29", "01", "2022", None)
-Fin = [Test1, Test2, Test3]
+# Test1 = Card("Montle", "10", "01", "2022", "12:30")
+# Test2 = Card("Test2", "010", "03", "2022", "12:30")
+# Test3 = Card("Test3", "29", "01", "2022", None)
+# Fin = [Test1, Test2, Test3]
+
+
 if __name__ == "__main__":
     # import pickle
     # pickle.dump(LobbyArt, open("MapSaveFile", "wb"))
