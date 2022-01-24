@@ -1,13 +1,11 @@
-from datetime import date
-from time import time, time_ns
+from datetime import date, datetime
 import math
 import random
 
-
 # MONTLE, The slightly more advanced ToDo List
 # Every month has 30.42 days, fuck u
-todays_date = date.today()  #  todays_date.year, todays_date.month todays_date.day
-
+todays_date = date.today()  # todays_date.year, todays_date.month todays_date.day
+CurrentHour = datetime.now().strftime("%H")
 """
 
     #Add, Remove, edit Tasks 
@@ -109,7 +107,7 @@ class Card:
                     )
                 )
             if self._Year == todays_date.year:
-                return 15  
+                return 15
         if not self._Day and not self._Year:
             if self._Month > todays_date.month:
                 return int((30.42 * self._Month) - (30.42 * todays_date.month))
@@ -241,8 +239,18 @@ class Card:
         self._ManualPrio = True
 
     def ResetPrio(self):
-        self._Priority = self.DateAllocatedPriorityer()
-        self._ManualPrio = False
+        if self._Day == None and self._Month == None and self._Year == None:
+            return True
+        ## if the date's don't have a specific date (like the next 15th or the next May where year isn't mentioned)
+        ## Nothing is automatically removed
+        tempPrio = self.DateAllocatedPriorityer()
+        if self._Priority < tempPrio:
+            self._Priority == math.inf
+        else:
+            if self._ManualPrio:
+                return
+            else:
+                self._Priority = tempPrio
 
     def __str__(self):
         Details = "on {} at {} (Prio:{})".format(
@@ -373,16 +381,16 @@ def TtGenerate(Fin, Times):  # Returns Timetable str
     Time = TtSetTimes(Times)
     EventProbList = TtProbListGen(Fin, Times)
     Events = TtTimetableImportant(Fin, Time)
-    if not EventProbList:
+    if not EventProbList:  # if there are no events
         EventProbList.append(Empty())
-    if len(Events) < Time * 3:
+    if len(Events) < Time * 3:  # Time * 3
         for i in range(Time * 3 - len(Events)):
             Events.append(random.choice(EventProbList))
     return Events
 
 
 def TtProbListGen(Fin, Times):
-    # Generates the list of events that will randomly s
+    # Generates the list of events that will randomly select
     EventProbList = []
     TempFin = sorted(Fin, key=lambda x: x.ReturnPriority(), reverse=True)
     TempHold = []
@@ -439,11 +447,19 @@ def TtSetTimes(times):
     # Returns a number of 30 minute subjects needed to fill through the next 3 days
     # Times is possibly a list of tuples [("00:00", "03:00"), ()]
     TotalHours = []
+    Total30minutes = []
     for TimeFrames in times:
-        Hours, Minutes = TimeFrames[0].split(":")
-        Hours1, Minutes = TimeFrames[1].split(":")
+        Hours, Minutes = map(int, TimeFrames[0].split(":"))
+        Hours1, Minutes1 = map(int, TimeFrames[1].split(":"))
+        Hrdiff = Hours1 - Hours
+        if Hrdiff < 0:
+            print("24 hours and smallest to biggest")
+            return sum(TotalHours) * 2
         TotalHours.append(int(Hours1) - int(Hours))
-    return sum(TotalHours) * 2
+        if Minutes != Minutes1:
+            Total30minutes.append(Minutes1 - Minutes)
+    # *2 for how many 30mins from hours
+    return int(sum(TotalHours) * 2 + (sum(Total30minutes) / 30))
 
 
 def TtUpdate(Events, Fin, RemoveName, Times):
@@ -472,14 +488,18 @@ def PythonTerminalPrint(events, Times):  # Helper function for TtGenerate()
         print(" " * 42, "TimeTable Invalid\n")
         print(" " * 34, "Please input cards and timeframes")
         return
+
+    Times.sort(key=lambda x: int(x[0].split(":")[0]))
+
     Time = TtSetTimes(Times)
 
     print(" " * 50, "TimeTable\n")
     # [("00:00", "03:00"), ("14:00", "17:00")]
+
     c = 0
     Hr, Min = Times[0][0].split(":")
     Hr = int(Hr)
-
+    #
     for i in range(Time):
         if int(Hr) < 10:
             Spaces = 30
@@ -491,6 +511,7 @@ def PythonTerminalPrint(events, Times):  # Helper function for TtGenerate()
             TempHr, TempMin = map(int, Times[c][1].split(":"))
             if int(Hr) == TempHr and int(Min) == TempMin:
                 c += 1
+                print("\n")
                 Hr, Min = Times[c][0].split(":")
         except IndexError:
             continue
@@ -500,19 +521,22 @@ def PythonTerminalPrint(events, Times):  # Helper function for TtGenerate()
 def DailyPriorityUpdate(Fin, SavedEvents, SavedDay, SavedTimes):
 
     if SavedDay != todays_date.day:
+        if CurrentHour < "11":
+            SavedTimes = random.choice(GlobalWholeTimes)[1::]
+        elif CurrentHour < "15":
+            SavedTimes = random.choice(GlobalEveningTimes)[1::]
+        else:
+            SavedTimes = random.choice(GlobalSchoolDayTimes)[1::]
+
         for i in Fin:
-            if not i.ReturnManualPrio():
-                TempPrio = i.ReturnPriority()
-                i.ResetPrio()
-                if i.ReturnPriority() > TempPrio or i.ReturnPriority() < 0:
-                    Fin.remove(i)
-    Time = TtSetTimes(SavedTimes)
-    if len(SavedEvents) > Time * 2:
-        TempEvents = TtGenerate(Fin, SavedTimes)
-        while len(SavedEvents) > Time * 2:
-            SavedEvents.pop()
-        while len(SavedEvents) < Time * 3:
-            SavedEvents.append(random.choice(TempEvents))
+            i.ResetPrio()
+        SavedEvents = TtGenerate(Fin, SavedTimes)
+
+    # while len(SavedEvents) > Time * 2:
+    #     SavedEvents.pop() # remove the first day, leaving only the next two days
+    # while len(SavedEvents) < Time * 3:
+    #     SavedEvents.append(random.choice(TempEvents))
+
     return Fin, SavedEvents, SavedTimes
 
 
@@ -520,27 +544,28 @@ def PrintControls(w, Fin, Events, Times):
     if w == "MainMenu":
         print(
             """
-Input 1) Create card
-Input 2) Remove a Card
-Input 3) Add Timeframes
-Input 4) Remove Timeframes
-Input  ) Save and Exit
+ Input 1) Create card            Input 5) Default Timeframes
+ Input 2) Remove a Card          Input 6) State a reason (Coming Soon)
+ Input 3) Add Timeframes
+ Input 4) Remove Timeframes
+ Input  ) Save and Exit
         """
         )
     elif w == "CreateCard":
-        Name = False
-        while not Name:
-            print("Input) Name")
-            Name = input()
-        print("Input) Day (DueDate) (DD/MM/YYYY) ")
+
+        print(" Input) Name")
+        Name = input()
+        if not Name:
+            return
+        print(" Input) Day (DueDate) (DD/MM/YYYY) ")
         Day = input()
-        print("Input) Month (DueDate) (MM/YYYY) ")
+        print(" Input) Month (DueDate) (MM/YYYY) ")
         Month = input()
-        print("Input) Year (DueDate) (YYYY) ")
+        print(" Input) Year (DueDate) (YYYY) ")
         Year = input()
-        print("Input) Time due (HH:MM in 24 hour)")
+        print(" Input) Time due (HH:MM in 24 hour)")
         Time = input()
-        print("Input) Manual Priority")
+        print(" Input) Manual Priority")
         Prio = input()
 
         if CreationCheck(Fin, Name, Day, Month, Year, Time):
@@ -549,7 +574,8 @@ Input  ) Save and Exit
     elif w == "RemoveCard":
         Fin = SortByPriority(Fin)
         for c, i in enumerate(Fin):
-            print(f" {c+1}) ", " " * 27, i)
+
+            print(f" {c+1})", " " * (30 - len(str(c + 1))), i)
         if len(Fin) != 0:
             Temp = input()
             if Temp:
@@ -571,7 +597,7 @@ Input  ) Save and Exit
                 and int(hrs) < 24
                 and int(hrs) >= 0
             ):
-                print("Input) End time (HH:MM) in 24 hours")
+                print(" Input) End time (HH:MM) in 24 hours")
                 temp1 = input()
                 hrs1, mins1 = temp.split(":")
                 if (
@@ -583,29 +609,99 @@ Input  ) Save and Exit
                     and int(hrs) <= int(hrs1)
                 ):
                     if int(hrs) == int(hrs1) and int(mins) > int(mins1):
-                        print("Start time isn't stop time")
+                        print(" Start time isn't stop time")
                         return None
                     return (temp, temp1)
                 else:
-                    print("Wrong.")
+                    print(" Wrong.")
             else:
-                print("wrong")
+                print(" wrong")
         except ValueError:
-            print("Wrong.")
+            print(" Wrong.")
             return None
-
     elif w == "RTimeframes":
         for c, i in enumerate(Times):
-            print(f" {c+1}) ", " " * 27, i)
+            print(f" {c+1})", " " * (30 - len(str(c + 1))), i)
         if len(Times) != 0:
             Temp = input()
             if Temp:
-                if int(Temp) <= len(Times) and int(Temp) > 0:
-                    Times.pop(c)
-                    print("removing time")
+                Temp = int(Temp)
+                if Temp <= len(Times) and Temp > 0:
+                    temp = Times.pop(Temp - 1)
+                    print(f" removing timeframe: {temp}")
                     return Times
                 else:
                     print("Could not")
+    elif w == "Default Timeframes":
+        check = GlobalTimes[0][0][0]
+        print(" 0) ", " " * 30, "Empty schedule\n")
+        for c, i in enumerate(GlobalTimes):
+            if i[0][0] != check:
+                print("\n")
+                check = i[0][0]
+            print(
+                " {}) {}".format(c + 1, i[0]),
+                " " * (32 - len(i[0]) - len(str(c + 1))),
+                i[1::],
+            )
+
+        try:
+            ans = int(input())
+            if ans == 0:
+                return []
+            elif ans in range(len(GlobalTimes)):
+                return GlobalTimes[ans - 1][1::]
+        except ValueError:
+            print("Invalid entry")
+        return Times  # If ans == ""
+
+
+GlobalWholeTimes = [
+    [
+        "Wholeday (1)",
+        ("9:00", "11:00"),
+        ("12:00", "14:00"),
+        ("15:00", "17:00"),
+        ("18:00", "19:00"),
+    ],
+    [
+        "Wholeday (2)",
+        ("8:00", "10:00"),
+        ("11:00", "13:00"),
+        ("14:00", "16:00"),
+        ("17:00", "18:00"),
+    ],
+    [
+        "Wholeday (3)",
+        ("8:00", "9:00"),
+        ("10:00", "12:00"),
+        ("13:00", "15:00"),
+        ("16:00", "18:00"),
+    ],
+    [
+        "Wholeday",
+        ("8:00", "9:30"),
+        ("12:00", "13:30"),
+        ("15:00", "17:00"),
+        ("18:00", "19:00"),
+    ],
+]
+GlobalEveningTimes = [
+    ["Evening only (1)", ("12:00", "14:00"), ("15:00", "17:00"), ("18:00", "19:00")],
+    ["Evening only (2)", ("11:00", "13:00"), ("14:00", "15:00"), ("17:00", "19:00")],
+    ["Evening only (4)", ("12:00", "14:00"), ("15:00", "18:00"), ("19:00", "20:00")],
+    ["Evening only (3)", ("12:00", "14:00"), ("15:00", "18:00")],
+    ["Evening only", ("11:30", "12:30"), ("13:30", "14:30"), ("16:30", "18:00")],
+]
+GlobalSchoolDayTimes = [
+    ["Post-School", ("17:00", "19:00")],
+    ["Post-School (1)", ("17:00", "18:00"), ("20:00", "21:00")],
+    ["Post-School (2)", ("16:30", "17:30"), ("18:30", "20:30")],
+]
+GlobalTimes = []
+for i in (GlobalWholeTimes, GlobalEveningTimes, GlobalSchoolDayTimes):
+    i.sort(key=lambda x: TtSetTimes(x[1::]))
+    GlobalTimes += i
 
 
 def Save(Fin, Events, SavedDay, Times):
