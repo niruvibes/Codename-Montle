@@ -2,6 +2,8 @@
 <p align="center">
   <img width="230" height="150" src="https://github.com/niruvibes/Codename-Montle/blob/main/assets/book.png"><br>
   Welcome to Montle, a simple planning application which will sort out all your activites into a planner by priority. 
+
+Note from Niruvibes: This has been kept on hold, we are busy and kinda arent bothered. Noone looks at this anyway why am i writing this note lol.
   
   Note from ThartWayy: Everything changed when the fire nation attacked. Literally everything. Now it's just a timetable generator that only reads and generates in 30 minute timeframes (24hr). Add remove cards, date priority allocation (DAPER's :D) and other small quality of life things known only by and useful to me
 </p>
